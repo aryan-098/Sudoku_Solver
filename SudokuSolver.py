@@ -1,5 +1,6 @@
 import pygame
 import time
+import random
 
 pygame.init()
 pygame.font.init()
@@ -12,21 +13,40 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
-# Initialize screen
+
+# Display screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Sudoku Solver")
 
-# Font setup
-font = pygame.font.Font(None, 40)
-def GetQuestion(filename):
-    with open(filename,"r") as file:
-        board=[]
-        for line in file:
-            row=list(map(int,line.strip().split()))
-            board.append(row)
-        return board
 
-board= GetQuestion("SudokuQuestion.txt")
+# Font 
+font = pygame.font.Font(None, 40)
+
+
+# Get random questions from file
+def GetQuestion(filename):
+    with open(filename, 'r') as file:
+        content = file.read().strip()
+    
+    puzzles = content.split("\n---\n")  # Split puzzles using separator "---"
+    random_puzzle = random.choice(puzzles)  # Pick a random puzzle
+    
+    # Only process valid rows (skip any separator lines)
+    board = []
+    for line in random_puzzle.split("\n"):
+        # Skip any empty lines or separator lines
+        if line.strip() and line != '---':
+            board.append([int(num) for num in line.split()])
+    
+    return board
+
+
+
+board=GetQuestion(r"D:\Python\Project\SudokuQuestions.txt")
+
+
+
+
 def draw_board():
     screen.fill(WHITE)
     for row in range(GRID_SIZE):
@@ -45,6 +65,8 @@ def draw_board():
 
     pygame.display.update()
 
+
+
 # Function to draw a number in a cell (with color for backtracking/placing)
 def draw_cell(row, col, num, color):
     pygame.draw.rect(screen, WHITE, (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE))
@@ -55,6 +77,8 @@ def draw_cell(row, col, num, color):
         screen.blit(text, (col * CELL_SIZE + 20, row * CELL_SIZE + 15))
 
     pygame.display.update()
+
+
 
 
 def isvalid(board,row,col,num): #checking the rules of Sudoku
@@ -69,6 +93,8 @@ def isvalid(board,row,col,num): #checking the rules of Sudoku
             if board[row][col]==num:
                 return False
     return True
+
+
 
 
 def solve(board):
@@ -93,9 +119,13 @@ def solve(board):
     return True
 
 
+
+
 def print_board(board):
     for row in board:
             print(" ".join(str(num) if num!=0 else '_' for num in row))
+
+
 
 
 def main():
@@ -119,6 +149,8 @@ def main():
                 running = False
 
     pygame.quit()
+
+
 
 # Run the Sudoku solver with Pygame animation
 if __name__ == "__main__":
